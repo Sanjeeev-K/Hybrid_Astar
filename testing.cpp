@@ -13,53 +13,6 @@ double SPEED = 1.45;
 double LENGTH = 0.5;
 int num_theta = 90;
 
-// void plot(double x1, double y1, double theta, double x2, double y2, double theta2){
-//     double x_prev = x1;
-//     double y_prev = y1;
-//     double x_next = x_prev;
-//     double y_next = y_prev;
-//     for(int i = 0; i<=100; i++){
-//         x_next = x_prev + (SPEED * cos(theta)  )*1/100;
-//         y_next = y_prev + (SPEED * sin(theta) ) *1/100;
-//         vector<double> vec_x = {x_next,x_prev};
-//         vector<double> vec_y = {y_next, y_prev};
-//         plt::plot(vec_x,vec_y);
-//         x_prev = x_next;
-//         y_prev = y_next;
-        
-//         // delta2 = delta * i/100
-//         // double omega = SPEED / LENGTH * tan(delta2);
-//         // theta = theta + omega;
-
-//         theta += (theta2 - theta)*1/100;
-
-
-
-//         if(theta > 2*3.1415) {  
-//             theta = theta - 2*3.1415;
-//         }
-//     }
-//     cout<<endl<<"Next x is :"<<x_next;
-//     cout<<endl<<"Next y is :"<<y_next<<endl;
-//     plt::ylim(-1,11);
-//     plt::xlim(-1,11);
-    // plt::show();
-// }
-
-void plot(double x, double y){
-    std::vector<double> x1, y1;
-    x1.push_back(x);
-    y1.push_back(y);
-    plt::plot(x1,y1,"cx");
-}
-
-void plot_grid(double x, double y){
-    std::vector<double> x1, y1;
-    x1.push_back(x);
-    y1.push_back(y);
-    plt::plot(x1,y1,"bx");
-}
-
 // Sets up maze grid
 int X = 1;
 int _ = 0;
@@ -87,10 +40,29 @@ vector<vector<int>> GRID = {
 //   {_,_,_},
 //   {_,_,_}};
 
-
-
 vector<double> START = {0.0,0.0,0.0};
 vector<int> GOAL = {(int)GRID.size()-1, (int)GRID[0].size()-1};
+
+void plot(double x, double y){
+    std::vector<double> x1, y1;
+    x1.push_back(x);
+    y1.push_back(y);
+    plt::plot(x1,y1,"cx");
+}
+
+void plot_grid(double x, double y){
+    std::vector<double> x1, y1;
+    x1.push_back(x);
+    y1.push_back(y);
+    plt::plot(x1,y1,"bx");
+}
+
+void plot_path(double x, double y){
+    std::vector<double> x1, y1;
+    x1.push_back(x);
+    y1.push_back(y);
+    plt::plot(x1,y1,"go");
+}
 
 class Element{
     public:
@@ -180,11 +152,6 @@ double lim_x = GRID[0].size();
   double lim_y = GRID[0].size();
   for(int i = 0; i<GRID.size(); i++){
     for(int j=0; j<GRID[0].size(); j++){
-      // plt::plot(j, GRID.size()-1 - i)
-      // vector<double> x11 = {double(j)};
-      // vector<double> y11 = {double(GRID.size()-1 - i)};
-      // vector<double> x_lim = {double(i),double(GRID.size()-1)};
-      // vector<double> y_lim = {double(j),double(GRID[0].size()-1)};
       vector<double> a1 {double(i),double(i)};
       vector<double> b1 {double(j),lim_y};
       vector<double> a2 {double(i),lim_x};
@@ -229,19 +196,21 @@ double lim_x = GRID[0].size();
 
     priority_queue< Element, vector<Element>, greater<Element> > open_list;
     open_list.push(start);
+    Element Parent_of_goal;
 
     while(!open_list.empty()){
         Element current = open_list.top();
         open_list.pop();
         double x = current.x;
         double y = current.y;
+        double theta = Normalize(current.theta);
         plot(x,y);
         // plt::pause(.1);
         cout<<"Debugging here1"<<endl;
-        double theta = current.theta;
         if(int(x)==GOAL[0] && int(y)==GOAL[1]){
             cout<<"Reached Goal";
             reached_goal = true;
+            Parent_of_goal = parent[theta_id(theta)][int(x)][int(y)];
             break;
         }
         else{
@@ -291,6 +260,19 @@ double lim_x = GRID[0].size();
     }
 
     //create vector to store all parents.
+    while(1){
+        double x_1 = Parent_of_goal.x;
+        double y_1 = Parent_of_goal.y;
+        double theta_1 = Normalize( Parent_of_goal.theta );
+        int id_1 = theta_id(theta_1);
+        plot_path(x_1,y_1);
+        plt::pause(.5);
+        Parent_of_goal = parent[id_1][int(x_1)][int(y_1)];
+        if(x_1==START[0] && y_1==START[1]){
+            break;
+        }
+
+    }
 
     cout<<"Code Over"<<endl;
     plt::show();
