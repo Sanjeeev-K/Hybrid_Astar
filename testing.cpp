@@ -12,6 +12,7 @@ using namespace std;
 double SPEED = 1.45;
 double LENGTH = 0.5;
 int num_theta = 90;
+double delta_step = 5;
 
 // Sets up maze grid
 int X = 1;
@@ -114,7 +115,7 @@ vector<Element> add_neighbors(Element current){
     double x_current = current.x;
     double y_current = current.y;
     double theta_current = current.theta;
-    for(double delta = -35; delta<40; delta += 35){
+    for(double delta = -35; delta<40; delta += delta_step){
         double x = x_current + SPEED * cos(theta_current);
         double y = y_current + SPEED * sin(theta_current);
         double delta_in_radians = (delta*PI)/180.0;
@@ -260,18 +261,24 @@ double lim_x = GRID[0].size();
     }
 
     //create vector to store all parents.
+    vector<Element> path;
     while(1){
         double x_1 = Parent_of_goal.x;
         double y_1 = Parent_of_goal.y;
         double theta_1 = Normalize( Parent_of_goal.theta );
         int id_1 = theta_id(theta_1);
-        plot_path(x_1,y_1);
-        plt::pause(.5);
+        path.push_back(Parent_of_goal);
+        
         Parent_of_goal = parent[id_1][int(x_1)][int(y_1)];
         if(x_1==START[0] && y_1==START[1]){
             break;
         }
-
+    }
+    for(int i = path.size(); i>=0; i--){
+        double x_1 = path[i].x;
+        double y_1 = path[i].y;
+        plot_path(x_1,y_1);
+        plt::pause(.1);
     }
 
     cout<<"Code Over"<<endl;
