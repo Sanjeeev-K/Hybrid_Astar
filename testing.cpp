@@ -11,7 +11,7 @@ using namespace std;
 
 double SPEED = 1.45;
 double LENGTH = 0.5;
-int num_theta = 4;
+int num_theta = 90;
 
 // void plot(double x1, double y1, double theta, double x2, double y2, double theta2){
 //     double x_prev = x1;
@@ -51,6 +51,13 @@ void plot(double x, double y){
     x1.push_back(x);
     y1.push_back(y);
     plt::plot(x1,y1,"rx");
+}
+
+void plot_grid(double x, double y){
+    std::vector<double> x1, y1;
+    x1.push_back(x);
+    y1.push_back(y);
+    plt::plot(x1,y1,"bx");
 }
 
 // Sets up maze grid
@@ -115,6 +122,37 @@ vector<Element> add_neighbors(Element current){
     return res;
 }
 
+double Normalize(double theta){
+    double normalized_theta = theta;
+    //Normalizing theta ..so that it lies in [0,2pi)
+    while(normalized_theta<0){
+        // cout<<"Theta++ at theta_neighbor = "<<theta_neighbor<<endl;
+        normalized_theta += 2*PI;
+    }
+    while(theta>=2*PI){
+        // cout<<"Theta-- at theta_neighbor = "<<theta_neighbor<<endl;
+        normalized_theta -= 2*PI;
+
+    }
+    if(normalized_theta<0){
+        cout<<"********************************Underflow*****************************************"<<endl;
+        // break;
+    }
+    if(normalized_theta>=2*PI){
+        cout<<"*******************************Overflow********************************************"<<endl;
+        // break;
+    }
+    return normalized_theta;
+}
+
+int theta_id(double theta){
+    int id =  floor( (theta*num_theta)/(2*PI) );
+    if(id<0 || id>=num_theta){
+        cout<<"*******************************Num_Theta Segmentation fault**************************"<<endl;
+    }
+    return id;
+}
+
 
 int main(){
 
@@ -149,13 +187,26 @@ int main(){
     vector<vector<vector<Element>>> parent (num_theta,b);
 
     Element start(START[0],START[1],START[2]);
-    parent[0][0][0] = start;
-    // vector< vector < vector <Element> > > parent ( num_theta, vector<vector<int>> ( GRID.size(), vector<Element> ( GRID[0].size())));
+    // parent[0][0][0] = start;
+    plot(START[0],START[1]);
+    plot(GOAL[0],GOAL[1]);
+    for(int i = 0; i<GRID.size(); i++){
+        for(int j = 0; j<GRID[0].size(); j++){
+            if(GRID[i][j]==1){
+                plot_grid(i,j);
+            }
+        }
+    }
+
+    // vector< vector < vector <Ele ment> > > parent ( num_theta, vector<vector<int>> ( GRID.size(), vector<Element> ( GRID[0].size())));
 
 
     //2. Create a Priority Queue. ASecinding order. 
     // priority_queue<Element> open_list;
     // vector<Element> closed_list;
+
+    // priority_queue< Element> open_list;
+
 
     priority_queue< Element, vector<Element>, greater<Element> > open_list;
     // start.f = 100;
@@ -173,6 +224,9 @@ int main(){
         open_list.pop();
         double x = current.x;
         double y = current.y;
+        plot(x,y);
+        // plt::pause(.1);
+        cout<<"Debugging here1"<<endl;
         double theta = current.theta;
         if(int(x)==GOAL[0] && int(y)==GOAL[1]){
             cout<<"Reached Goal";
@@ -182,28 +236,43 @@ int main(){
         else{
             vector<Element> neighbors;
             neighbors = add_neighbors(current);
+            cout<<"Number of neighbors added = "<<neighbors.size()<<endl;
+            // for(auto n:neighbors){
+            //     cout<<"Neighbor added at x,y,theta,Exp status = "<<n.x<<" "<<n.y<<" "<<n.theta<<" "<<explored[0][int(n.x)][int(n.y)]<<endl;
+            // }
             // for(auto j:neighbors){
             //     cout<<j.x<<" "<<j.y<<" "<<j.theta<<" "<<j.cost<<" "<<j.f<<endl;
             // }
             // cout<<double(PI);
-            //check if neighbors are valid. //check if neighbors are unexplored.
+
+            
+
+
+            //check if neighbors are within Grid && not on obstacle. //check if neighbors are unexplored.
             for(auto i:neighbors){
-                if(i.x>=0 && i.x<=GRID.size() && i.y>0 && i.y<=GRID[0].size()){
+                if(i.x>=0 && i.x<=GRID.size() && i.y>=0 && i.y<=GRID[0].size() && GRID[int(x)][int(y)]==0){
                     double theta_neighbor = i.theta;
-                    //Normalizing theta ..so that it lies in [0,2pi)
-                    while(theta_neighbor<2*PI){
-                        theta_neighbor += 2*PI;
-                    }
-                    int theta_neighbor_id = floor( (theta_neighbor*num_theta)/(2*PI) );
+
+                    theta_neighbor = Normalize(theta_neighbor);
+
+                    int theta_neighbor_id = theta_id(theta_neighbor);
+                    cout<<"ID generated is "<<theta_neighbor_id<<endl;
+
                     if(explored[theta_neighbor_id][int(i.x)][int(i.y)]==0){
                         //Heiristic - Euclidian distance 
-                        double h = sqrt( pow(i.x - x,2) + pow(i.y - y,2) );
-                        double c = i.cost + 1;
+
+                        cout<<"Debugging here2"<<endl;
+                        double goal_x = GOAL[0];
+                        double goal_y = GOAL[1];
+                        double h = sqrt( pow(i.x - goal_x,2) + pow(i.y - goal_y,2) );
+                        double c = i.cost + 1; //Check for change after changing resolution
                         double f = h+c;
                         parent[theta_neighbor_id][int(i.x)][int(i.y)] = current;
                         i.cost = c;
                         i.f = f;
                         open_list.push(i);
+                        explored[theta_neighbor_id][int(i.x)][int(i.y)]=1;
+                        cout<<"Added Valid Neighbor at x,y = ("<<i.x<<" "<<i.y<<" )"<<endl;
                     }
 
                 }
@@ -213,8 +282,13 @@ int main(){
     }
 
     if(reached_goal==false){
-        cout<<"Path to Goal not found";
+        cout<<"Path to Goal not found"<<endl;
     }
+
+    //create vector to store all parents.
+
+    cout<<"Code Over"<<endl;
+    plt::show();
 
     
 

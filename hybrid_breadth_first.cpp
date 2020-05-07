@@ -105,10 +105,8 @@ HBF::maze_path HBF::search(vector< vector<int> > &grid, vector<double> &start,
   /**
    * TODO: Add heuristics and convert this function into hybrid A*
    */
-  vector<vector<vector<int>>> closed(
-    NUM_THETA_CELLS, vector<vector<int>>(grid[0].size(), vector<int>(grid.size())));
-  vector<vector<vector<maze_s>>> came_from(
-    NUM_THETA_CELLS, vector<vector<maze_s>>(grid[0].size(), vector<maze_s>(grid.size())));
+  vector<vector<vector<int>>> closed( NUM_THETA_CELLS, vector<vector<int>>(grid[0].size(), vector<int>(grid.size())));
+  vector<vector<vector<maze_s>>> came_from(NUM_THETA_CELLS, vector<vector<maze_s>>(grid[0].size(), vector<maze_s>(grid.size())));
   double theta = start[2];
   int stack = theta_to_stack_number(theta);
   int g = 0;
