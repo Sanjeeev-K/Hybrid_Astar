@@ -222,7 +222,7 @@ for(int i = 0; i<GRID.size(); i++){
 
             //check if neighbors are within Grid && not on obstacle. //check if neighbors are unexplored.
             for(auto i:neighbors){
-                if(i.x>=0 && i.x<=GRID.size() && i.y>=0 && i.y<=GRID[0].size() && GRID[int(x)][int(y)]==0){
+                if(i.x>=0 && i.x<=GRID.size() && i.y>=0 && i.y<=GRID[0].size() && GRID[int(i.x)][int(i.y)]==0){
                     cout<<"Here1"<<endl;
                     double theta_neighbor = i.theta;
                     cout<<"Here2"<<endl;
@@ -248,6 +248,7 @@ for(int i = 0; i<GRID.size(); i++){
                         open_list.push(i);
                         explored[theta_neighbor_id][int(i.x)][int(i.y)]=1;
                         cout<<"Added Valid Neighbor at x,y = ("<<i.x<<" "<<i.y<<" )"<<endl;
+
                     }
 
                 }
