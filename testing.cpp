@@ -82,6 +82,13 @@ vector<vector<int>> GRID = {
   {_,X,X,X,_,_,_,_,_,_,_,_,_,_,_,_,},
   {X,X,X,_,_,_,_,_,_,_,_,_,_,_,_,_,}};
 
+//   vector<vector<int>> GRID = {
+//   {_,_,_},
+//   {_,_,_},
+//   {_,_,_}};
+
+
+
 vector<double> START = {0.0,0.0,0.0};
 vector<int> GOAL = {(int)GRID.size()-1, (int)GRID[0].size()-1};
 
@@ -104,24 +111,6 @@ bool operator>(Element const & a, Element const & b)
 {
     return a.f > b.f;
 }
-
-vector<Element> add_neighbors(Element current){
-    vector<Element> res;
-    double x_current = current.x;
-    double y_current = current.y;
-    double theta_current = current.theta;
-    for(double delta = -35; delta<40; delta += 35){
-        double x = x_current + SPEED * cos(theta_current);
-        double y = y_current + SPEED * sin(theta_current);
-        double delta_in_radians = (delta*PI)/180.0;
-        double omega = (SPEED / LENGTH) * tan(delta_in_radians);
-        double theta = theta_current + omega;
-        Element new_ele(x,y,theta);
-        res.push_back(new_ele);
-    }
-    return res;
-}
-
 
 // Function to Normalize Theta
 double Normalize(double theta){
@@ -146,6 +135,28 @@ double Normalize(double theta){
     }
     return normalized_theta;
 }
+
+
+vector<Element> add_neighbors(Element current){
+    vector<Element> res;
+    double x_current = current.x;
+    double y_current = current.y;
+    double theta_current = current.theta;
+    for(double delta = -35; delta<40; delta += 35){
+        double x = x_current + SPEED * cos(theta_current);
+        double y = y_current + SPEED * sin(theta_current);
+        double delta_in_radians = (delta*PI)/180.0;
+        double omega = (SPEED / LENGTH) * tan(delta_in_radians);
+        double theta = theta_current + omega;
+        theta = Normalize(theta);
+        Element new_ele(x,y,theta);
+        res.push_back(new_ele);
+    }
+    return res;
+}
+
+
+
 
 
 
