@@ -50,7 +50,7 @@ void plot(double x, double y){
     std::vector<double> x1, y1;
     x1.push_back(x);
     y1.push_back(y);
-    plt::plot(x1,y1,"rx");
+    plt::plot(x1,y1,"cx");
 }
 
 void plot_grid(double x, double y){
@@ -100,10 +100,10 @@ class Element{
         double f;
         double cost;
     Element(double xx, double yy, double t1){
-        x = xx; y = yy; theta = t1;f = 0; cost = 0;
+        x = xx; y = yy; theta = t1;f = 0.0; cost = 0.0;
     }
     Element(){
-        x = 0.0; y = 0.0; theta = 0.0; f = 0; cost = 0;
+        x = 0.0; y = 0.0; theta = 0.0; f = 0.0; cost = 0.0;
     }
 };
 
@@ -155,12 +155,6 @@ vector<Element> add_neighbors(Element current){
     return res;
 }
 
-
-
-
-
-
-
 //Function to return theta_id
 int theta_id(double theta){
     int id =  floor( (theta*num_theta)/(2*PI) );
@@ -170,19 +164,54 @@ int theta_id(double theta){
     return id;
 }
 
-
 int main(){
 
     //Plot Grid and Start locations
 plot(START[0],START[1]);
 plot(GOAL[0],GOAL[1]);
-for(int i = 0; i<GRID.size(); i++){
-    for(int j = 0; j<GRID[0].size(); j++){
-        if(GRID[i][j]==1){
-            plot_grid(i,j);
-        }
+// for(int i = 0; i<GRID.size(); i++){
+//     for(int j = 0; j<GRID[0].size(); j++){
+//         if(GRID[i][j]==1){
+//             plot_grid(i,j);
+//         }
+//     }
+// }
+double lim_x = GRID[0].size();
+  double lim_y = GRID[0].size();
+  for(int i = 0; i<GRID.size(); i++){
+    for(int j=0; j<GRID[0].size(); j++){
+      // plt::plot(j, GRID.size()-1 - i)
+      // vector<double> x11 = {double(j)};
+      // vector<double> y11 = {double(GRID.size()-1 - i)};
+      // vector<double> x_lim = {double(i),double(GRID.size()-1)};
+      // vector<double> y_lim = {double(j),double(GRID[0].size()-1)};
+      vector<double> a1 {double(i),double(i)};
+      vector<double> b1 {double(j),lim_y};
+      vector<double> a2 {double(i),lim_x};
+      vector<double> b2 {double(j),double(j)};
+
+      
+      plt::plot(a1,b1,"k");
+      plt::plot(a2,b2,"k");
+
+
+
+      vector<double> x11 = {double(i)};
+      vector<double> y11 = {double(j)};
+      if(GRID[i][j]==1){
+        plt::plot(x11,y11,"rs");
+        vector<double> a3 = {double(i), double(i+1)};
+        vector<double> b3 = {double(j), double(j+1)};
+        vector<double> a4 = {double(i), double(i+1)};
+        vector<double> b4 = {double(j+1), double(j)};
+        plt::plot(a3,b3,"r-");
+        // plt::pause(.5);
+        plt::plot(a4,b4,"r-");
+        // plt::pause(.5);
+      }
+
     }
-}
+  }
 
     bool reached_goal = false;
 
