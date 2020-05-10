@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+  <rosparam file="$(find robot_planning)/launch/config/planner.yaml" command="load" ns="planner/" />
+    
+	<node pkg="robot_planning" name="planner" type="planner" output="screen" />
+  
+</launch>
+    
+
