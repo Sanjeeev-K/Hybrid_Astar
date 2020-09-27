@@ -107,7 +107,7 @@ int main() {
       y_coordinates = { double(step.y) };
       plt::plot(x_coordinates,y_coordinates,"bo");
       // sleep(0.5);
-      // plt::pause(.5);
+      plt::pause(.1);
 
   }
 
